@@ -1,0 +1,46 @@
+############################
+# Global
+############################
+.env
+*.log
+.DS_Store
+Thumbs.db
+
+############################
+# Python (Data Collector)
+############################
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# Byte-compiled files
+__pycache__/
+*.py[cod]
+
+# Testing / tooling
+.pytest_cache/
+.coverage
+.mypy_cache/
+
+############################
+# .NET (Web API)
+############################
+# Build results
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Rider / VS Code
+.idea/
+.vscode/
+
+############################
+# OS / Editor
+############################
+*.swp
+*.tmp

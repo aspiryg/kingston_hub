@@ -1,0 +1,7 @@
+**Create `requirements.txt`:**
+```
+gtfs-realtime-bindings==1.0.0
+requests==2.31.0
+pandas==2.1.4
+sqlalchemy==2.0.23
+protobuf==4.25.1
