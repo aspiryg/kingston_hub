@@ -5,3 +5,7 @@ KINGSTON_TRANSIT_ALERTS = "https://api.cityofkingston.ca/gtfs-realtime/alerts.pb
 
 # Database
 DATABASE_URL = "sqlite:///kingston_transit.db"
+
+# MongoDB
+MONGODB_URL = "mongodb+srv://ahmadspierij:mypassword@cluster0.ai3hseh.mongodb.net/?appName=Cluster0"
+MONGODB_DATABASE = "kingston_transit"

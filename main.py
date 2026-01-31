@@ -3,7 +3,7 @@ Main script to collect and store Kingston Transit data
 """
 
 from data_collectors.transit_collector import TransitCollector
-from database.models import DatabaseManager
+from database.mongodb_models import MongoDBManager
 import time
 from datetime import datetime
 
@@ -16,8 +16,8 @@ def collect_once():
     
     # Initialize
     collector = TransitCollector()
-    db = DatabaseManager()
-    db.create_tables()
+    db = MongoDBManager()
+    db.create_indexes()
     
     # Collect and save
     vehicles = collector.fetch_vehicle_positions()
@@ -27,6 +27,8 @@ def collect_once():
         db.save_vehicle_positions(vehicles)
     else:
         print("No vehicles to save")
+    
+    db.close()
 
 
 def collect_continuously(interval_seconds: int = 30):
@@ -35,8 +37,8 @@ def collect_continuously(interval_seconds: int = 30):
     print("Press Ctrl+C to stop\n")
     
     collector = TransitCollector()
-    db = DatabaseManager()
-    db.create_tables()
+    db = MongoDBManager()
+    db.create_indexes()
     
     try:
         while True:
@@ -45,7 +47,6 @@ def collect_continuously(interval_seconds: int = 30):
             vehicles = collector.fetch_vehicle_positions()
             if vehicles:
                 db.save_vehicle_positions(vehicles)
-                print(f"✓ Saved {len(vehicles)} bus positions")
             else:
                 print("✗ No data collected")
             
@@ -54,44 +55,34 @@ def collect_continuously(interval_seconds: int = 30):
             
     except KeyboardInterrupt:
         print("\n\nStopping data collection. Goodbye!")
+    finally:
+        db.close()
 
 
 def show_statistics():
     """Show statistics from collected data"""
-    from database.models import VehiclePosition
-    from sqlalchemy import func
-    
-    db = DatabaseManager()
-    session = db.Session()
+    db = MongoDBManager()
     
     try:
-        # Total records
-        total = session.query(func.count(VehiclePosition.id)).scalar()
+        stats = db.get_statistics()
         
-        # Unique buses
-        unique_buses = session.query(func.count(func.distinct(VehiclePosition.bus_id))).scalar()
-        
-        # Unique routes
-        unique_routes = session.query(func.count(func.distinct(VehiclePosition.route_id))).scalar()
-        
-        # Date range
-        first = session.query(func.min(VehiclePosition.timestamp)).scalar()
-        last = session.query(func.max(VehiclePosition.timestamp)).scalar()
-        
-        print(f"\n{'='*80}")
-        print("Database Statistics")
-        print(f"{'='*80}")
-        print(f"Total position records: {total:,}")
-        print(f"Unique buses tracked: {unique_buses}")
-        print(f"Unique routes: {unique_routes}")
-        if first and last:
-            print(f"Data range: {first} to {last}")
-            duration = last - first
-            print(f"Duration: {duration}")
-        print(f"{'='*80}\n")
-        
+        if stats:
+            print(f"\n{'='*80}")
+            print("Database Statistics")
+            print(f"{'='*80}")
+            print(f"Total position records: {stats['total']:,}")
+            print(f"Unique buses tracked: {stats['unique_buses']}")
+            print(f"Unique routes: {stats['unique_routes']}")
+            if stats['first_timestamp'] and stats['last_timestamp']:
+                print(f"Data range: {stats['first_timestamp']} to {stats['last_timestamp']}")
+                duration = stats['last_timestamp'] - stats['first_timestamp']
+                print(f"Duration: {duration}")
+            print(f"{'='*80}\n")
+        else:
+            print("Could not retrieve statistics")
+            
     finally:
-        session.close()
+        db.close()
 
 
 if __name__ == "__main__":

@@ -109,7 +109,7 @@ class TransitCollector:
         return status_map.get(status_code, 'UNKNOWN')
     
     def print_vehicle_summary(self, vehicles: List[Dict]):
-        """Print a human-readable summary of vehicle data"""
+        """Print a summary of vehicle positions"""
         if not vehicles:
             print("No vehicles currently active")
             return
