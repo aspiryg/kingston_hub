@@ -105,4 +105,4 @@ The stack might change as I build - I'm learning as I go and adjusting based on 
 
 ---
 
-*This is a work in progress. Started: [Date]. Currently in early development phase.*
+*This is a work in progress. Started: January 5, 2026. Currently in early development phase. I stopped development temporarily to focus on other priorities but plan to resume soon.*
